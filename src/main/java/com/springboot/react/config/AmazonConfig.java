@@ -18,8 +18,8 @@ public class AmazonConfig {
     @Bean
     public AmazonS3 s3(){
         AWSCredentials awsCredentials= new BasicAWSCredentials(
-                "AKIATL4UL6PBWVETGIW5",
-                "bbti2pIuoWHpVXoa9qCMWRD1duczvsuF4CRRk3KX"
+                dotenv.get("ACCESS_KEY"),
+                dotenv.get("SECRET_KEY")
         );
 
         return AmazonS3ClientBuilder
