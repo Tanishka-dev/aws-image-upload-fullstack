@@ -17,7 +17,10 @@ export function MyDropzone(props) {
          .post(
             `http://localhost:8080/api/v1/${props.userProfileId}/image/upload`,
             formData,
-            { headers: { "Content-Type": "multipart/form-data" } }
+            {
+               headers: { "Content-Type": "multipart/form-data" },
+               mode: "no-cors",
+            }
          )
          .then(() => {
             console.log("Success");
