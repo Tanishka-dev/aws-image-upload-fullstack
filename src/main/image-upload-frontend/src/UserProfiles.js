@@ -9,7 +9,6 @@ const UserProfiles = () => {
    const [userProfile, setUserProfile] = useState([]);
    const fetchUserProfiles = () => {
       axios.get("http://localhost:8080/api/v1/user-profile").then((res) => {
-         console.log(res);
          const data = res.data;
          setUserProfile(data);
       });
@@ -22,6 +21,11 @@ const UserProfiles = () => {
    return userProfile.map((userProfile, index) => {
       return (
          <div key={index}>
+            {userProfile.userProfileId ? (
+               <img
+                  src={`http://localhost:8080/api/v1/${userProfile.userProfileId}/image/download`}
+               />
+            ) : null}
             <br />
             <br />
             <h1>{userProfile.userName}</h1>

@@ -9,7 +9,6 @@ import UserProfiles from "./UserProfiles";
 export function MyDropzone(props) {
    const onDrop = useCallback((acceptedFiles) => {
       const file = acceptedFiles[0];
-      console.log(file);
       const formData = new FormData();
       formData.append("file", file); //equal to requestParam
 
@@ -22,12 +21,8 @@ export function MyDropzone(props) {
                mode: "no-cors",
             }
          )
-         .then(() => {
-            console.log("Success");
-         })
-         .catch((err) => {
-            console.log(err);
-         });
+         .then()
+         .catch();
    }, []);
    const { getRootProps, getInputProps, isDragActive } = useDropzone({
       onDrop,
