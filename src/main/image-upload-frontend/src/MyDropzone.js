@@ -20,7 +20,7 @@ export function MyDropzone(props) {
             { headers: { "Content-Type": "multipart/form-data" } }
          )
          .then(() => {
-            console.log(props.userProfileId);
+            console.log("Success");
          })
          .catch((err) => {
             console.log(err);
