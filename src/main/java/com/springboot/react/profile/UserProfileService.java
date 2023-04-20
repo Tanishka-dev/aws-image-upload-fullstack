@@ -22,9 +22,28 @@ public class UserProfileService {
         this.userProfileDataAccessService = userProfileDataAccessService;
         this.fileStore = fileStore;
     }
+    private UserProfile getUserProfileOrThrow(UUID userProfileId) {
+        return userProfileDataAccessService
+                .getUserProfiles()
+                .stream()
+                .filter(userProfile -> userProfile.getUserProfileId().equals(userProfileId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException(String.format("User profile %s not found", userProfileId)));
+    }
+
 
     List<UserProfile> getUserProfiles(){
         return userProfileDataAccessService.getUserProfiles();
+    }
+    public byte[] downloadUserProfileImage(UUID userProfileId) {
+        UserProfile user= getUserProfileOrThrow(userProfileId);
+        String path=String.format("%s/%s",
+                BucketName.PROFILE_IMAGE.getBucketName(),
+                user.getUserProfileId(),
+                user.getUserProfileImageUrl());
+        return user.getUserProfileImageUrl()
+                .map(key -> fileStore.download(path, key))
+                .orElse(new byte[0]);
     }
 
     public void uploadUserProfileImage(UUID userProfileId, MultipartFile file) {
@@ -34,7 +53,7 @@ public class UserProfileService {
         }
 
         //file is an image
-        if(!Arrays.asList(IMAGE_JPEG,IMAGE_GIF,IMAGE_PNG).contains(file.getContentType())){
+        if(!Arrays.asList(IMAGE_JPEG.getMimeType(),IMAGE_GIF.getMimeType(),IMAGE_PNG.getMimeType()).contains(file.getContentType())){
             throw new IllegalStateException("File must be an image");
         }
 
@@ -55,13 +74,16 @@ public class UserProfileService {
 
        //Store the image in S3 and update db with S3 image link
         String path=String.format("%s/%s", BucketName.PROFILE_IMAGE.getBucketName(), user.getUserProfileId());
-        String filename=String.format("%s-%s", file.getName(), UUID.randomUUID());
+        String filename=String.format("%s-%s", file.getOriginalFilename(), UUID.randomUUID());
         try {
             fileStore.save(path,filename, Optional.of(metadata),file.getInputStream());
+            user.setUserProfileImageUrl(filename);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
 
 
     }
+
+
 }
